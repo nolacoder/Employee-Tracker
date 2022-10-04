@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const { landingQuestion } = require('./src/questions')
+const { landingQuestion, roleQuestions } = require('./src/questions')
 const cTable = require('console.table');
 
 const PORT = process.env.PORT || 3001;
@@ -24,7 +24,7 @@ app.listen(PORT, () => {
     // console.log(`Server running on port ${PORT}`);
 });
 
-const landingQuestions = () => {
+const askLandingQuestion = () => {
     inquirer.prompt(landingQuestion)
         .then((answer) => {
             handleLandingAnswer(answer);
@@ -32,21 +32,36 @@ const landingQuestions = () => {
 }
 
 const viewAllRoles = () => {
-    db.query('SELECT * FROM roles', function (err, results) {
+    db.query('SELECT roles.id, title, name AS department, salary  FROM roles JOIN departments ON roles.department_id = departments.id;', function (err, results) {
         console.table('\n', results);
+        askLandingQuestion();
       });
 };
 
 const viewAllEmployees = () => {
-    db.query('SELECT * FROM employees', function (err, results) {
+    db.query('SELECT employees.id, first_name, last_name, title, name AS department, salary FROM employees JOIN roles ON employees.role_id = roles.id JOIN departments ON roles.department_id = departments.id ORDER BY employees.id;', function (err, results) {
         console.table('\n', results);
+        askLandingQuestion();
       });
 }
 
 const viewAllDepartments = () => {
     db.query('SELECT * FROM departments', function (err, results) {
         console.table('\n', results);
+        askLandingQuestion();
       });
+}
+
+// const createRole = (answers) => {
+//     const {}
+// }
+
+const askRoleQuestions = () => {
+    inquirer.prompt(roleQuestions)
+        .then((answers) => {
+            // createRole(answers);
+            console.log(answers);
+        })
 }
 
 const handleLandingAnswer = (answer) => {
@@ -64,7 +79,7 @@ const handleLandingAnswer = (answer) => {
             viewAllDepartments();
             break;
         case 'Add a role':
-            addRole();
+            askRoleQuestions();
             break;
         case 'Add an employee':
             addEmployee();
@@ -77,7 +92,7 @@ const handleLandingAnswer = (answer) => {
 
 
 const init = () => {
-    landingQuestions();
+    askLandingQuestion();
 }
 
 init();
