@@ -43,8 +43,17 @@ const viewAllEmployees = () => {
       });
 }
 
+const viewAllDepartments = () => {
+    db.query('SELECT * FROM departments', function (err, results) {
+        console.table('\n', results);
+      });
+}
+
 const handleLandingAnswer = (answer) => {
     switch (answer.landingOptions) {
+        case 'View all departments':
+            viewAllDepartments();
+            break;
         case 'View all roles':
             viewAllRoles();
             break;
