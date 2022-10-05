@@ -1,9 +1,11 @@
 const express = require('express');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const { landingQuestion, roleQuestions } = require('./src/questions')
+const { landingQuestion, roleQuestions, departmentQuestions, employeeQuestions } = require('./src/questions')
 const cTable = require('console.table');
-const Role = require('./lib/Role')
+const Role = require('./lib/Role');
+const Department = require('./lib/Department');
+const Employee = require('./lib/Employee');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -32,53 +34,6 @@ const askLandingQuestion = () => {
         })
 }
 
-const viewAllRoles = () => {
-    db.query('SELECT roles.id, title, name AS department, salary  FROM roles JOIN departments ON roles.department_id = departments.id;', function (err, results) {
-        console.table('\n', results);
-        askLandingQuestion();
-      });
-};
-
-const viewAllEmployees = () => {
-    db.query('SELECT employees.id, first_name, last_name, title, name AS department, salary FROM employees JOIN roles ON employees.role_id = roles.id JOIN departments ON roles.department_id = departments.id ORDER BY employees.id;', function (err, results) {
-        console.table('\n', results);
-        askLandingQuestion();
-      });
-}
-
-const viewAllDepartments = () => {
-    db.query('SELECT * FROM departments', function (err, results) {
-        console.table('\n', results);
-        askLandingQuestion();
-      });
-}
-
-const createRole = (answers) => {
-    const {roleName, roleSalary, roleDepartment } = answers;
-    
-    const newRole = new Role(roleName, roleSalary, roleDepartment)
-    // console.log(newRole);
-    newRole.createRoleInDb();
-    askLandingQuestion();
-}
-
-const askRoleQuestions = () => {
-    inquirer.prompt(roleQuestions)
-        .then((answers) => {
-            createRole(answers);
-        })
-}
-
-const askDepartmentQuestions = () => {
-    inquirer.prompt(departmentQuestions)
-        .then((answers) => {
-            createDepartment(answers);
-        })
-}
-
-
-
-
 const handleLandingAnswer = (answer) => {
     switch (answer.landingOptions) {
         case 'View all departments':
@@ -105,11 +60,74 @@ const handleLandingAnswer = (answer) => {
     }
 }
 
+const viewAllRoles = () => {
+    db.query('SELECT roles.id, title, name AS department, salary  FROM roles JOIN departments ON roles.department_id = departments.id;', function (err, results) {
+        console.table('\n', results);
+        askLandingQuestion();
+      });
+};
+
+const viewAllEmployees = () => {
+    db.query('SELECT employees.id, first_name, last_name, title, name AS department, salary FROM employees JOIN roles ON employees.role_id = roles.id JOIN departments ON roles.department_id = departments.id ORDER BY employees.id;', function (err, results) {
+        console.table('\n', results);
+        askLandingQuestion();
+      });
+}
+
+const viewAllDepartments = () => {
+    db.query('SELECT * FROM departments', function (err, results) {
+        console.table('\n', results);
+        askLandingQuestion();
+      });
+}
+
+const askRoleQuestions = () => {
+    inquirer.prompt(roleQuestions)
+        .then((answers) => {
+            createRole(answers);
+        })
+}
+
+const askDepartmentQuestions = () => {
+    inquirer.prompt(departmentQuestions)
+        .then((answers) => {
+            createDepartment(answers);
+        })
+}
+
+const askEmployeeQuestions = () => {
+    inquirer.prompt(employeeQuestions)
+        .then((answers) => {
+            createEmployee(answers);
+        })
+}
+
+const createRole = (answers) => {
+    const {roleName, roleSalary, roleDepartment } = answers;
+    
+    const newRole = new Role(roleName, roleSalary, roleDepartment)
+    newRole.createRoleInDb();
+    askLandingQuestion();
+}
+
+const createDepartment = (answers) => {
+    const {departmentName} = answers;
+
+    const newDepartment = new Department (departmentName)
+    newDepartment.createDeptInDb();
+    askLandingQuestion();
+}
+
+const createEmployee = (answers) => {
+    const { firstName, lastName, empRole, empManager } = answers;
+
+    const newEmployee = new Employee (firstName, lastName, empRole, empManager)
+    newEmployee.createEmpInDb();
+    askLandingQuestion();
+}
 
 const init = () => {
     askLandingQuestion();
 }
 
 init();
-
-module.exports = db

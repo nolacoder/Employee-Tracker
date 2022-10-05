@@ -25,7 +25,40 @@ const roleQuestions = [
     }
 ]
 
+const departmentQuestions = [
+    {
+        type: 'input',
+        message: 'What is the name of the department?',
+        name: 'departmentName'
+    }
+]
+
+const employeeQuestions = [
+    {
+        type: 'input',
+        message: "What is the employee's first name?",
+        name: 'firstName'
+    },
+    {
+        type: 'input',
+        message: "What is the employee's last name?",
+        name: 'lastName'
+    },
+    {
+        type: 'input',
+        message: "What is the employee's role?",
+        name: 'empRole'
+    },
+    {
+        type: 'input',
+        message: "Who is the employee's manager?",
+        name: 'empManager'
+    }
+]
+
 module.exports = {
     landingQuestion,
-    roleQuestions
+    roleQuestions,
+    departmentQuestions,
+    employeeQuestions
 }
