@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const { landingQuestion, roleQuestions, departmentQuestions, employeeQuestions } = require('./src/questions')
+const { landingQuestion, roleQuestions, departmentQuestions, employeeQuestions, updateEmployeeQuestions } = require('./src/questions')
 const cTable = require('console.table');
 const Role = require('./lib/Role');
 const Department = require('./lib/Department');
@@ -22,10 +22,6 @@ const db = mysql.createConnection(
     },
     console.log(`Connected to the workplace_db database.`)
 );
-
-app.listen(PORT, () => {
-    // console.log(`Server running on port ${PORT}`);
-});
 
 const askLandingQuestion = () => {
     inquirer.prompt(landingQuestion)
@@ -55,7 +51,7 @@ const handleLandingAnswer = (answer) => {
             askEmployeeQuestions();
             break;
         case 'Update an employee role':
-            updateEmployeeRole();
+            askUpdateEmployee();
             break;
     }
 }
@@ -102,6 +98,13 @@ const askEmployeeQuestions = () => {
         })
 }
 
+const askUpdateEmployee = () => {
+    inquirer.prompt(updateEmployeeQuestions)
+        .then((answer) => {
+            updateEmployee(answer);
+        })
+}
+
 const createRole = (answers) => {
     const {roleName, roleSalary, roleDepartment } = answers;
     
@@ -124,6 +127,21 @@ const createEmployee = (answers) => {
     const newEmployee = new Employee (firstName, lastName, empRole, empManager)
     newEmployee.createEmpInDb();
     askLandingQuestion();
+}
+
+const updateEmployee = (answers) => {
+    const { nameToUpdate, updatedRole } = answers;
+    const nameArr = nameToUpdate.split(' ');
+    const firstName = nameArr[0];
+    const lastName = nameArr[1];
+
+    db.query('UPDATE employees SET role_id = ? WHERE first_name = ? AND last_name = ?', [updatedRole, firstName, lastName], function (err, results) {
+        if (err) {
+            console.log(err);
+        }
+        askLandingQuestion();
+      });
+
 }
 
 const init = () => {

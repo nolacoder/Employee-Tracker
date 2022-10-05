@@ -56,9 +56,23 @@ const employeeQuestions = [
     }
 ]
 
+const updateEmployeeQuestions = [
+    {
+        type: 'input',
+        message: 'Which employee would you like to update',
+        name: 'nameToUpdate'
+    },
+    {
+        type: 'input',
+        message: 'Which role would you like to assign the the employee?',
+        name: 'updatedRole'
+    }
+]
+
 module.exports = {
     landingQuestion,
     roleQuestions,
     departmentQuestions,
-    employeeQuestions
+    employeeQuestions,
+    updateEmployeeQuestions
 }
