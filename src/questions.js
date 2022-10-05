@@ -1,3 +1,4 @@
+// All of the question arrays are stored here to keep server.js lean
 const landingQuestion = [
     {
         type: 'list',

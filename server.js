@@ -1,3 +1,4 @@
+// Importing necessary modules
 const express = require('express');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
@@ -13,6 +14,7 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// Establishing the connection to the mysql database workplace_db
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -30,6 +32,7 @@ const askLandingQuestion = () => {
         })
 }
 
+// Switch statement to handle the variety of possible responses
 const handleLandingAnswer = (answer) => {
     switch (answer.landingOptions) {
         case 'View all departments':
@@ -104,7 +107,7 @@ const askUpdateEmployee = () => {
             updateEmployee(answer);
         })
 }
-
+// Role, Department, and Employee are used as class contructors, allowing us to utilize class methods in addition to uniform record creation
 const createRole = (answers) => {
     const {roleName, roleSalary, roleDepartment } = answers;
     
@@ -129,6 +132,7 @@ const createEmployee = (answers) => {
     askLandingQuestion();
 }
 
+// Searches the employees table for the name provided and adjusts the role accordingly
 const updateEmployee = (answers) => {
     const { nameToUpdate, updatedRole } = answers;
     const nameArr = nameToUpdate.split(' ');
