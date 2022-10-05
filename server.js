@@ -3,6 +3,7 @@ const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const { landingQuestion, roleQuestions } = require('./src/questions')
 const cTable = require('console.table');
+const Role = require('./lib/Role')
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -52,17 +53,31 @@ const viewAllDepartments = () => {
       });
 }
 
-// const createRole = (answers) => {
-//     const {}
-// }
+const createRole = (answers) => {
+    const {roleName, roleSalary, roleDepartment } = answers;
+    
+    const newRole = new Role(roleName, roleSalary, roleDepartment)
+    // console.log(newRole);
+    newRole.createRoleInDb();
+    askLandingQuestion();
+}
 
 const askRoleQuestions = () => {
     inquirer.prompt(roleQuestions)
         .then((answers) => {
-            // createRole(answers);
-            console.log(answers);
+            createRole(answers);
         })
 }
+
+const askDepartmentQuestions = () => {
+    inquirer.prompt(departmentQuestions)
+        .then((answers) => {
+            createDepartment(answers);
+        })
+}
+
+
+
 
 const handleLandingAnswer = (answer) => {
     switch (answer.landingOptions) {
@@ -76,13 +91,13 @@ const handleLandingAnswer = (answer) => {
             viewAllEmployees();
             break;
         case 'Add a department':
-            viewAllDepartments();
+            askDepartmentQuestions();
             break;
         case 'Add a role':
             askRoleQuestions();
             break;
         case 'Add an employee':
-            addEmployee();
+            askEmployeeQuestions();
             break;
         case 'Update an employee role':
             updateEmployeeRole();
@@ -96,3 +111,5 @@ const init = () => {
 }
 
 init();
+
+module.exports = db
